@@ -2,7 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const DATA_DIR = path.join(__dirname, '../../data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join('/tmp', 'ailea-data')
+  : path.join(__dirname, '../../data');
 
 function ensureDir() {
   if (!fs.existsSync(DATA_DIR)) {
