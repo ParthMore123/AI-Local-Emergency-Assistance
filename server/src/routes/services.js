@@ -26,8 +26,13 @@ router.get('/nearby', protect, async (req, res) => {
     }
 
     const services = await EmergencyService.find(filter).limit(100);
-    const radiusKm = Number(req.query.radiusKm) || 25;
-    const results = enrichWithDistance(services, lat, lng).filter((s) => s.distanceKm <= radiusKm);
+    const requestedRadius = req.query.radiusKm ? Number(req.query.radiusKm) : 60;
+    const enriched = enrichWithDistance(services, lat, lng);
+    let results = enriched.filter((s) => s.distanceKm <= requestedRadius);
+    // If none within requested radius (e.g. state-level view), provide closest services
+    if (results.length === 0 && enriched.length > 0) {
+      results = enriched.slice(0, 10);
+    }
 
     res.json({ results, count: results.length });
   } catch (error) {

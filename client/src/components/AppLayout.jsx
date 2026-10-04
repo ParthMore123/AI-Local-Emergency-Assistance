@@ -72,7 +72,13 @@ export default function AppLayout() {
             <div>
               <strong style={{ fontFamily: 'var(--font-display)' }}>Emergency dashboard</strong>
               <div style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>
-                {locating ? 'Detecting location…' : location.label} · {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                {locating
+                  ? 'Detecting location…'
+                  : `${location?.label || 'Palghar, Maharashtra'} ${
+                      location?.lat != null && location?.lng != null
+                        ? `· ${Number(location.lat).toFixed(4)}, ${Number(location.lng).toFixed(4)}`
+                        : ''
+                    }`}
               </div>
             </div>
           </div>

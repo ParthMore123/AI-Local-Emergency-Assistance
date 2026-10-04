@@ -47,7 +47,7 @@ To reset demo data, delete the `server/data` folder and restart the API (or run 
 - Email: `demo@ailea.app`
 - Password: `demo1234`
 
-Seeded services are centered on Bengaluru. If browser geolocation is denied, the app falls back to that demo location.
+Seeded services are centered on Palghar district, Maharashtra. If browser geolocation is denied, the app falls back to that demo location.
 
 ## Environment
 

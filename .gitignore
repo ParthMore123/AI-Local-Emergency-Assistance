@@ -8,3 +8,5 @@ dist/
 .env.local
 .vite/
 .vercel/
+
+.vercel

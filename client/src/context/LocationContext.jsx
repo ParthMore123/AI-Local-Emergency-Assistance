@@ -1,16 +1,38 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import api from '../api/client'
 import { useAuth } from './AuthContext'
+import { DEFAULT_PALGHAR_LOCATION, PALGHAR_DISTRICT_CITIES, REGIONS_VIEW } from '../utils/cities'
 
 const LocationContext = createContext(null)
 
-const FALLBACK = { lat: 12.9716, lng: 77.5946, label: 'Bengaluru (demo fallback)', source: 'fallback' }
+const FALLBACK = DEFAULT_PALGHAR_LOCATION
 
 export function LocationProvider({ children }) {
   const { token } = useAuth()
   const [location, setLocation] = useState(FALLBACK)
   const [permission, setPermission] = useState('prompt')
   const [locating, setLocating] = useState(false)
+
+  async function selectCity(cityObj) {
+    const next = {
+      lat: cityObj.lat,
+      lng: cityObj.lng,
+      label: `${cityObj.name}, Maharashtra`,
+      city: cityObj.city || cityObj.name,
+      district: 'Palghar',
+      state: 'Maharashtra',
+      source: 'manual_selection',
+    }
+    setLocation(next)
+    if (token) {
+      try {
+        await api.put('/auth/profile', { location: next })
+      } catch {
+        /* non-blocking */
+      }
+    }
+    return next
+  }
 
   async function refreshLocation() {
     if (!navigator.geolocation) {
@@ -26,7 +48,10 @@ export function LocationProvider({ children }) {
           const next = {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
-            label: 'Current location',
+            label: 'Current location (GPS)',
+            city: 'Palghar District',
+            district: 'Palghar',
+            state: 'Maharashtra',
             source: 'device',
           }
           setLocation(next)
@@ -58,7 +83,18 @@ export function LocationProvider({ children }) {
   }, [token])
 
   return (
-    <LocationContext.Provider value={{ location, permission, locating, refreshLocation, setLocation }}>
+    <LocationContext.Provider
+      value={{
+        location,
+        permission,
+        locating,
+        refreshLocation,
+        setLocation,
+        selectCity,
+        palgharCities: PALGHAR_DISTRICT_CITIES,
+        regions: REGIONS_VIEW,
+      }}
+    >
       {children}
     </LocationContext.Provider>
   )

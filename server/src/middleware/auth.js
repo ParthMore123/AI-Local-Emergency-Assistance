@@ -15,8 +15,6 @@ async function protect(req, res, next) {
       return res.status(401).json({ message: 'User not found' });
     }
 
-    delete user.passwordHash;
-    delete user.otp;
     req.user = user;
     next();
   } catch (error) {

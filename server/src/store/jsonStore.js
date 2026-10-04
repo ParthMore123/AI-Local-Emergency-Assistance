@@ -60,8 +60,14 @@ function attachSave(name, doc) {
       const idx = rows.findIndex((r) => String(r._id) === String(wrapped._id));
       const { save, toObject, ...plain } = wrapped;
       const stored = JSON.parse(JSON.stringify(plain));
-      if (idx >= 0) rows[idx] = stored;
-      else rows.push(stored);
+      if (idx >= 0) {
+        if (!stored.passwordHash && rows[idx].passwordHash) {
+          stored.passwordHash = rows[idx].passwordHash;
+        }
+        rows[idx] = stored;
+      } else {
+        rows.push(stored);
+      }
       writeAll(name, rows);
       return wrapped;
     },

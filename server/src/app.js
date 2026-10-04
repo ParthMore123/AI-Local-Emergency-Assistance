@@ -36,9 +36,18 @@ async function ensureReady() {
   if (!boot) {
     boot = (async () => {
       await connectDB();
+      const User = require('./models/User');
+      const bcrypt = require('bcryptjs');
       const seedResult = await seedDatabase({ reset: false });
       if (seedResult.seeded) {
-        console.log(`Seeded ${seedResult.services} emergency services + demo user`);
+        console.log(`Seeded ${seedResult.services} emergency services in Palghar + demo user`);
+      } else {
+        // Ensure demo user has passwordHash if existing record lacked it
+        const demoUser = await User.findOne({ email: 'demo@ailea.app' });
+        if (demoUser && !demoUser.passwordHash) {
+          demoUser.passwordHash = await bcrypt.hash('demo1234', 10);
+          await demoUser.save();
+        }
       }
     })();
   }
