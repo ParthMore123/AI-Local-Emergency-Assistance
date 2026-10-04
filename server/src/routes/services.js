@@ -25,7 +25,21 @@ router.get('/nearby', protect, async (req, res) => {
       filter.availability = req.query.availability;
     }
 
-    const services = await EmergencyService.find(filter).limit(100);
+    let services = await EmergencyService.find(filter).limit(100);
+
+    if (req.query.q) {
+      const q = String(req.query.q).toLowerCase().trim();
+      services = services.filter((s) => {
+        const nameMatch = s.name && s.name.toLowerCase().includes(q);
+        const addrMatch = s.address && s.address.toLowerCase().includes(q);
+        const cityMatch = s.city && s.city.toLowerCase().includes(q);
+        const typeMatch = s.type && s.type.toLowerCase().includes(q);
+        const facilityMatch = Array.isArray(s.facilities) && s.facilities.some((f) => f.toLowerCase().includes(q));
+        const descMatch = s.description && s.description.toLowerCase().includes(q);
+        return nameMatch || addrMatch || cityMatch || typeMatch || facilityMatch || descMatch;
+      });
+    }
+
     const requestedRadius = req.query.radiusKm ? Number(req.query.radiusKm) : 60;
     const enriched = enrichWithDistance(services, lat, lng);
     let results = enriched.filter((s) => s.distanceKm <= requestedRadius);

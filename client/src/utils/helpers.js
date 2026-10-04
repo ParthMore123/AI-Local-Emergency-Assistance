@@ -22,8 +22,36 @@ export function formatDistance(km) {
   return `${km.toFixed(1)} km`
 }
 
-export function mapsDirectionsUrl(lat, lng) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+export function mapsDirectionsUrl(lat, lng, destinationName = '', originLat = null, originLng = null) {
+  const originParam = (originLat != null && originLng != null) ? `&origin=${originLat},${originLng}` : ''
+  if (destinationName) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinationName)}&travelmode=driving${originParam}`
+  }
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving${originParam}`
+}
+
+export function googleMapsPlaceUrl(name, address, lat, lng) {
+  const query = [name, address].filter(Boolean).join(', ')
+  if (query) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+}
+
+export function googleMapsTraceUrl(lat, lng, label = '') {
+  if (lat == null || lng == null) return 'https://www.google.com/maps'
+  if (label) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(label + ' ' + lat + ',' + lng)}`
+  }
+  return `https://www.google.com/maps?q=${lat},${lng}`
+}
+
+export function googleMapsHospitalsUrl(city = 'Palghar', lat = null, lng = null, queryTerm = 'emergency hospitals') {
+  if (lat != null && lng != null) {
+    return `https://www.google.com/maps/search/${encodeURIComponent(queryTerm)}/@${lat},${lng},14z`
+  }
+  const query = `${queryTerm} in ${city}, Palghar district, Maharashtra`
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
 }
 
 export function telHref(phone) {

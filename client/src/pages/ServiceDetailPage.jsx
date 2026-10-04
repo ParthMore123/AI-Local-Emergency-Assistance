@@ -106,11 +106,28 @@ export default function ServiceDetailPage() {
           {service.description && <p>{service.description}</p>}
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem', marginTop: '1rem' }}>
-            <a className="btn btn-primary" href={telHref(service.phone)}>
-              <Phone size={16} /> Call
+            {service.phone && (
+              <a className="btn btn-primary" href={telHref(service.phone)}>
+                <Phone size={16} /> Call {service.phone}
+              </a>
+            )}
+            <a
+              className="btn btn-secondary"
+              href={googleMapsPlaceUrl(service.name, service.address, lat, lng)}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              <Navigation size={16} color="#ea4335" /> Check on Google Maps
             </a>
-            <a className="btn btn-secondary" href={mapsDirectionsUrl(lat, lng)} target="_blank" rel="noreferrer">
-              <Navigation size={16} /> Directions
+            <a
+              className="btn btn-secondary"
+              href={mapsDirectionsUrl(lat, lng, service.name, location.lat, location.lng)}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              <Navigation size={16} /> Google Maps Directions
             </a>
             <button className="btn btn-secondary" type="button" onClick={share}>
               <Share2 size={16} /> Share

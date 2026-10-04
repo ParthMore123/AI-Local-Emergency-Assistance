@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Siren, Bot, MapPinned, MapPin } from 'lucide-react'
+import { Siren, Bot, MapPinned, MapPin, Compass, ExternalLink } from 'lucide-react'
 import api from '../api/client'
 import { useLocationCtx } from '../context/LocationContext'
 import ServiceCard from '../components/ServiceCard'
-import { STATUS_LABELS } from '../utils/helpers'
+import { STATUS_LABELS, googleMapsTraceUrl, googleMapsHospitalsUrl } from '../utils/helpers'
 import { PALGHAR_DISTRICT_CITIES } from '../utils/cities'
 
 export default function DashboardPage() {
@@ -81,8 +81,38 @@ export default function DashboardPage() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Quick Switch City:</span>
-          {PALGHAR_DISTRICT_CITIES.slice(0, 6).map((c) => {
+          <a
+            className="btn btn-secondary"
+            href={googleMapsTraceUrl(location.lat, location.lng)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open traced location in Google Maps"
+            style={{ padding: '2px 8px', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+          >
+            <Compass size={12} color="#ea4335" /> Trace on G-Maps
+          </a>
+          <a
+            className="btn btn-secondary"
+            href={googleMapsHospitalsUrl(location.city, location.lat, location.lng, 'emergency hospitals')}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Search verified nearby hospitals in Google Maps"
+            style={{
+              padding: '2px 8px',
+              fontSize: '0.75rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              background: '#fee2e2',
+              color: '#991b1b',
+              borderColor: '#fca5a5',
+              fontWeight: 600,
+            }}
+          >
+            🏥 Find Hospitals
+          </a>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginLeft: 4 }}>Quick Pan:</span>
+          {PALGHAR_DISTRICT_CITIES.slice(0, 5).map((c) => {
             const isSelected = location.city && location.city.toLowerCase() === c.city.toLowerCase()
             return (
               <button
