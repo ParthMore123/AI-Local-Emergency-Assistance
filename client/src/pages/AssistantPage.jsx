@@ -4,6 +4,34 @@ import api from '../api/client'
 import { useLocationCtx } from '../context/LocationContext'
 import ServiceCard from '../components/ServiceCard'
 
+const DEMO_SCENARIOS = [
+  {
+    icon: '🚨',
+    title: 'Cardiac Distress',
+    text: 'Severe chest pain radiating to left arm and difficulty breathing near Palghar Railway Station.',
+  },
+  {
+    icon: '🚗',
+    title: 'Highway Crash',
+    text: 'Two-wheeler collision on Manor-Palghar Highway with head injury and bleeding, need trauma ambulance.',
+  },
+  {
+    icon: '🔥',
+    title: 'Industrial Fire',
+    text: 'Heavy smoke and electrical fire spreading at Boisar MIDC warehouse, need fire rescue.',
+  },
+  {
+    icon: '💊',
+    title: 'Urgent Pharmacy',
+    text: 'Urgent requirement for 24-hour emergency pharmacy for pediatric nebulizer and insulin in Palghar West.',
+  },
+  {
+    icon: '🚔',
+    title: 'Security Distress',
+    text: 'Car breakdown at midnight on dark road near Kelve with suspicious persons approaching.',
+  },
+]
+
 export default function AssistantPage() {
   const routerLocation = useRouterLocation()
   const { location } = useLocationCtx()
@@ -86,6 +114,29 @@ export default function AssistantPage() {
               placeholder='Example: "My friend has fainted. Find the nearest hospital."'
             />
           </div>
+
+          <div style={{ margin: '0.75rem 0 1rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+              ⚡ Try Demo Emergency Scenarios:
+            </span>
+            <div className="chip-row" style={{ marginTop: '0.4rem' }}>
+              {DEMO_SCENARIOS.map((scenario) => (
+                <button
+                  key={scenario.title}
+                  type="button"
+                  className="chip"
+                  onClick={() => {
+                    setMessage(scenario.text)
+                    analyze(scenario.text)
+                  }}
+                  title="Click to fill and run AI analysis"
+                >
+                  {scenario.icon} {scenario.title}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
             <button className="btn btn-primary" type="submit" disabled={loading}>
               {loading ? 'Analyzing…' : 'Analyze emergency'}

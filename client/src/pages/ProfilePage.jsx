@@ -12,6 +12,12 @@ const initialContactForm = {
   notifyOnSos: true,
 }
 
+const DEMO_CONTACT_PRESETS = [
+  { name: 'Sunita Patil (Spouse)', phone: '+91-98230-44556', relationship: 'Spouse', priority: 1 },
+  { name: 'Dr. Aniket Deshmukh', phone: '+91-98230-66778', relationship: 'Doctor', priority: 2 },
+  { name: 'Vikas Kulkarni (Neighbor)', phone: '+91-98230-77889', relationship: 'Neighbor', priority: 3 },
+]
+
 export default function ProfilePage() {
   const { user, refreshUser, logout } = useAuth()
   const [form, setForm] = useState({
@@ -227,9 +233,26 @@ export default function ProfilePage() {
               marginBottom: '1.25rem',
             }}
           >
-            <h3 style={{ fontSize: '0.95rem', margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <h3 style={{ fontSize: '0.95rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Plus size={16} /> Add New Emergency Contact
             </h3>
+
+            <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                Demo presets:
+              </span>
+              {DEMO_CONTACT_PRESETS.map((preset) => (
+                <button
+                  key={preset.name}
+                  type="button"
+                  className="chip"
+                  style={{ fontSize: '0.75rem', padding: '2px 8px' }}
+                  onClick={() => setContactForm({ ...preset, notifyOnSos: true })}
+                >
+                  + {preset.name.split(' ')[0]} ({preset.relationship})
+                </button>
+              ))}
+            </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
               <div className="field" style={{ margin: 0 }}>

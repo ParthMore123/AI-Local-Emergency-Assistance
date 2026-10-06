@@ -6,10 +6,19 @@ import { useLocationCtx } from '../context/LocationContext'
 import StatusTracker from '../components/StatusTracker'
 import ServiceCard from '../components/ServiceCard'
 
+const DEMO_SOS_PRESETS = [
+  'SOS activated',
+  'Critical Medical Emergency: Severe Chest Pain',
+  'Road Traffic Accident: Passenger Injured',
+  'Fire Emergency: Chemical / Industrial Smoke',
+  'Immediate Security Threat / Distress',
+]
+
 export default function SosPage() {
   const routeLocation = useLocation()
   const { location } = useLocationCtx()
   const [confirming, setConfirming] = useState(false)
+  const [sosNote, setSosNote] = useState('SOS activated')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [payload, setPayload] = useState(null)
@@ -43,7 +52,7 @@ export default function SosPage() {
         lat: location.lat,
         lng: location.lng,
         label: location.label,
-        description: 'SOS activated',
+        description: sosNote || 'SOS activated',
         confirm: true,
       })
       setPayload(data)
@@ -93,8 +102,33 @@ export default function SosPage() {
               <div className="alert alert-warn" style={{ background: 'rgba(255,255,255,0.16)', color: '#fff' }}>
                 Confirm SOS? This will notify selected emergency contacts and surface nearby services.
               </div>
+
+              <div style={{ background: 'rgba(0,0,0,0.15)', padding: '0.6rem 0.8rem', borderRadius: 6 }}>
+                <span style={{ fontSize: '0.78rem', color: '#fff', opacity: 0.9, fontWeight: 600 }}>
+                  Demo Emergency Type:
+                </span>
+                <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginTop: '0.35rem' }}>
+                  {DEMO_SOS_PRESETS.map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      className="chip"
+                      style={{
+                        fontSize: '0.75rem',
+                        background: sosNote === preset ? '#fff' : 'rgba(255,255,255,0.2)',
+                        color: sosNote === preset ? '#c1121f' : '#fff',
+                        borderColor: '#fff',
+                      }}
+                      onClick={() => setSosNote(preset)}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <button className="btn sos-cta" type="button" disabled={loading} onClick={activateSos}>
-                {loading ? 'Activating…' : 'Confirm & Activate SOS'}
+                {loading ? 'Activating…' : `Confirm & Activate SOS (${sosNote})`}
               </button>
               <button className="btn btn-secondary" type="button" onClick={() => setConfirming(false)}>
                 Cancel

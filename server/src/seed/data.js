@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const EmergencyService = require('../models/EmergencyService');
 const EmergencyContact = require('../models/EmergencyContact');
+const EmergencyRequest = require('../models/EmergencyRequest');
 
 // Palghar District Headquarters, Maharashtra
 const CENTER = { lat: 19.6967, lng: 72.7699 };
@@ -393,6 +394,7 @@ async function seedDatabase({ reset = false } = {}) {
   if (reset) {
     await EmergencyService.deleteMany({});
     await EmergencyContact.deleteMany({});
+    await EmergencyRequest.deleteMany({});
     await User.deleteMany({ email: 'demo@ailea.app' });
   }
 
@@ -404,7 +406,7 @@ async function seedDatabase({ reset = false } = {}) {
     },
   }));
 
-  await EmergencyService.insertMany(docs);
+  const createdServices = await EmergencyService.insertMany(docs);
 
   const passwordHash = await bcrypt.hash('demo1234', 10);
   const user = await User.create({
@@ -428,7 +430,7 @@ async function seedDatabase({ reset = false } = {}) {
     },
   });
 
-  await EmergencyContact.insertMany([
+  const insertedContacts = await EmergencyContact.insertMany([
     {
       userId: user._id,
       name: 'Rahul Patil (Brother)',
@@ -455,7 +457,181 @@ async function seedDatabase({ reset = false } = {}) {
     },
   ]);
 
-  return { seeded: true, services: docs.length };
+  // Seed demo emergency requests for realistic demo experience (active and historical)
+  const now = Date.now();
+  const demoRequests = [
+    {
+      userId: user._id,
+      emergencyType: 'medical',
+      description: 'Severe chest pain radiating to left arm and shortness of breath near Palghar Railway Station',
+      priority: 'critical',
+      location: { lat: 19.6974, lng: 72.7672, label: 'Station Road, Palghar West' },
+      selectedService: {
+        serviceId: createdServices[0]?._id,
+        name: 'Palghar District Civil & Rural Hospital',
+        type: 'hospital',
+        phone: '+91-2525-252324',
+      },
+      status: 'en_route',
+      isSos: true,
+      source: 'sos',
+      contactsNotified: insertedContacts.slice(0, 2).map((c) => ({
+        contactId: c._id,
+        name: c.name,
+        phone: c.phone,
+        notifiedAt: new Date(now - 15 * 60 * 1000).toISOString(),
+      })),
+      statusHistory: [
+        {
+          status: 'request_sent',
+          note: 'Emergency SOS activated with live GPS trace',
+          at: new Date(now - 15 * 60 * 1000).toISOString(),
+        },
+        {
+          status: 'service_notified',
+          note: 'Palghar District Civil Hospital trauma casualty desk alerted',
+          at: new Date(now - 12 * 60 * 1000).toISOString(),
+        },
+        {
+          status: 'en_route',
+          note: 'Advanced Cardiac Ambulance unit dispatched. Driver ETA ~4 mins',
+          at: new Date(now - 6 * 60 * 1000).toISOString(),
+        },
+      ],
+      createdAt: new Date(now - 15 * 60 * 1000).toISOString(),
+      updatedAt: new Date(now - 6 * 60 * 1000).toISOString(),
+    },
+    {
+      userId: user._id,
+      emergencyType: 'medical',
+      description: 'Two-wheeler collision with passenger head injury on Manor Road',
+      priority: 'high',
+      location: { lat: 19.6980, lng: 72.7731, label: 'Near Shivaji Chowk, Manor Road, Palghar East' },
+      selectedService: {
+        serviceId: createdServices[4]?._id,
+        name: 'Astha Hospital & Multispeciality ICU',
+        type: 'hospital',
+        phone: '+91-2525-253800',
+      },
+      status: 'arriving_soon',
+      isSos: false,
+      source: 'request',
+      statusHistory: [
+        {
+          status: 'request_sent',
+          note: 'Trauma assistance requested',
+          at: new Date(now - 32 * 60 * 1000).toISOString(),
+        },
+        {
+          status: 'service_notified',
+          note: 'Hospital emergency desk acknowledged request',
+          at: new Date(now - 28 * 60 * 1000).toISOString(),
+        },
+        {
+          status: 'en_route',
+          note: 'Paramedic ambulance dispatched',
+          at: new Date(now - 18 * 60 * 1000).toISOString(),
+        },
+        {
+          status: 'arriving_soon',
+          note: 'Ambulance arriving at scene in <2 mins',
+          at: new Date(now - 3 * 60 * 1000).toISOString(),
+        },
+      ],
+      createdAt: new Date(now - 32 * 60 * 1000).toISOString(),
+      updatedAt: new Date(now - 3 * 60 * 1000).toISOString(),
+    },
+    {
+      userId: user._id,
+      emergencyType: 'fire',
+      description: 'Electrical fire hazard and heavy smoke in warehouse at Boisar MIDC',
+      priority: 'high',
+      location: { lat: 19.8055, lng: 72.7485, label: 'Tarapur MIDC Phase 1, Boisar' },
+      selectedService: {
+        serviceId: createdServices[15]?._id,
+        name: 'MIDC Fire Station Tarapur - Boisar',
+        type: 'fire',
+        phone: '+91-2525-272101',
+      },
+      status: 'completed',
+      isSos: true,
+      source: 'sos',
+      contactsNotified: insertedContacts.slice(0, 1).map((c) => ({
+        contactId: c._id,
+        name: c.name,
+        phone: c.phone,
+        notifiedAt: new Date(now - 2 * 24 * 3600 * 1000).toISOString(),
+      })),
+      statusHistory: [
+        {
+          status: 'request_sent',
+          note: 'Fire SOS triggered',
+          at: new Date(now - 2 * 24 * 3600 * 1000).toISOString(),
+        },
+        {
+          status: 'service_notified',
+          note: 'Boisar Fire Control Room notified',
+          at: new Date(now - (2 * 24 * 3600 * 1000 - 2 * 60 * 1000)).toISOString(),
+        },
+        {
+          status: 'en_route',
+          note: '2 Fire tenders en route',
+          at: new Date(now - (2 * 24 * 3600 * 1000 - 8 * 60 * 1000)).toISOString(),
+        },
+        {
+          status: 'help_arrived',
+          note: 'Fire brigade arrived at scene',
+          at: new Date(now - (2 * 24 * 3600 * 1000 - 18 * 60 * 1000)).toISOString(),
+        },
+        {
+          status: 'completed',
+          note: 'Fire completely doused and incident closed',
+          at: new Date(now - (2 * 24 * 3600 * 1000 - 55 * 60 * 1000)).toISOString(),
+        },
+      ],
+      createdAt: new Date(now - 2 * 24 * 3600 * 1000).toISOString(),
+      updatedAt: new Date(now - (2 * 24 * 3600 * 1000 - 55 * 60 * 1000)).toISOString(),
+    },
+    {
+      userId: user._id,
+      emergencyType: 'security',
+      description: 'Vehicle breakdown on unlit road, suspicious activity nearby',
+      priority: 'normal',
+      location: { lat: 19.6955, lng: 72.7661, label: 'Palghar Police Station Area' },
+      selectedService: {
+        serviceId: createdServices[20]?._id,
+        name: 'Palghar City Police Station',
+        type: 'police',
+        phone: '+91-2525-252133',
+      },
+      status: 'completed',
+      isSos: false,
+      source: 'request',
+      statusHistory: [
+        {
+          status: 'request_sent',
+          note: 'Police assistance requested',
+          at: new Date(now - 5 * 24 * 3600 * 1000).toISOString(),
+        },
+        {
+          status: 'service_notified',
+          note: 'Palghar City Police Station assigned beat patrol',
+          at: new Date(now - (5 * 24 * 3600 * 1000 - 5 * 60 * 1000)).toISOString(),
+        },
+        {
+          status: 'completed',
+          note: 'Patrol arrived, secured situation safely',
+          at: new Date(now - (5 * 24 * 3600 * 1000 - 35 * 60 * 1000)).toISOString(),
+        },
+      ],
+      createdAt: new Date(now - 5 * 24 * 3600 * 1000).toISOString(),
+      updatedAt: new Date(now - (5 * 24 * 3600 * 1000 - 35 * 60 * 1000)).toISOString(),
+    },
+  ];
+
+  await EmergencyRequest.insertMany(demoRequests);
+
+  return { seeded: true, services: docs.length, requests: demoRequests.length };
 }
 
 module.exports = { seedDatabase, CENTER, services };

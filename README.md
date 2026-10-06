@@ -42,10 +42,21 @@ Open [http://localhost:5173](http://localhost:5173).
 
 To reset demo data, delete the `server/data` folder and restart the API (or run `npm run seed`).
 
-### Demo account
+### Demo account & Seeded Values
 
-- Email: `demo@ailea.app`
-- Password: `demo1234`
+- **Email:** `demo@ailea.app`
+- **Password:** `demo1234`
+- **Pre-seeded Emergency Contacts:** Rahul Patil (Brother), Dr. Sneha Joshi (Physician), Amit Sharma (Neighbor)
+- **Pre-seeded Active & Historical Requests:**
+  - 🚨 *Active (En Route):* Severe chest pain / Cardiac emergency at Palghar Station (Ambulance dispatched)
+  - 🚗 *Active (Arriving Soon):* Two-wheeler road crash on Manor-Palghar Highway (Astha Hospital Trauma unit)
+  - 🔥 *Completed:* Boisar MIDC industrial warehouse fire (Extinguished by MIDC Fire Station)
+  - 🚔 *Completed:* Late-night vehicle breakdown assistance (Resolved by Palghar City Police)
+- **One-Click Demo Helpers in UI:**
+  - **Sign In / Register:** Instant "Fill Demo Credentials" & "Fill Demo Details" buttons
+  - **AI Assistant:** 5 realistic quick-click scenario chips (Cardiac, Highway Crash, Fire, 24x7 Pharmacy, Night Distress)
+  - **Emergency Contacts & Profile:** Quick-fill preset chips for Spouse, Doctor, Neighbor, and District Helpline
+  - **Emergency SOS:** Quick emergency category selector during confirmation
 
 Seeded services are centered on Palghar district, Maharashtra. If browser geolocation is denied, the app falls back to that demo location.
 

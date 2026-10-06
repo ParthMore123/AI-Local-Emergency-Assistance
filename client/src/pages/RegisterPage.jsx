@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { ShieldCheck } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export default function RegisterPage() {
@@ -11,6 +12,16 @@ export default function RegisterPage() {
 
   function update(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function fillDemo() {
+    setForm({
+      name: 'Dr. Priya Sharma',
+      email: 'priya.demo@ailea.app',
+      phone: '+91-98230-99887',
+      password: 'demo1234',
+    })
+    setError('')
   }
 
   async function onSubmit(e) {
@@ -49,9 +60,22 @@ export default function RegisterPage() {
           <label htmlFor="password">Password</label>
           <input id="password" type="password" value={form.password} onChange={(e) => update('password', e.target.value)} minLength={6} required />
         </div>
-        <button className="btn btn-primary btn-block" disabled={loading} type="submit">
-          {loading ? 'Creating…' : 'Create account'}
-        </button>
+
+        <div style={{ display: 'grid', gap: '0.65rem', marginTop: '1.25rem' }}>
+          <button className="btn btn-primary btn-block" disabled={loading} type="submit">
+            {loading ? 'Creating…' : 'Create account'}
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary btn-block"
+            onClick={fillDemo}
+            style={{ fontSize: '0.85rem' }}
+          >
+            <ShieldCheck size={15} style={{ marginRight: 6, verticalAlign: 'middle' }} />
+            Fill Demo Details (Dr. Priya Sharma)
+          </button>
+        </div>
+
         <p style={{ marginTop: '1rem', textAlign: 'center' }}>
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
@@ -59,3 +83,4 @@ export default function RegisterPage() {
     </div>
   )
 }
+

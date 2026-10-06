@@ -11,6 +11,13 @@ const emptyForm = {
   notifyOnSos: true,
 }
 
+const DEMO_CONTACT_PRESETS = [
+  { name: 'Sunita Patil (Spouse)', phone: '+91-98230-44556', relationship: 'Family', priority: 1 },
+  { name: 'Dr. Aniket Deshmukh', phone: '+91-98230-66778', relationship: 'Other', priority: 2 },
+  { name: 'Vikas Kulkarni (Neighbor)', phone: '+91-98230-77889', relationship: 'Neighbor', priority: 3 },
+  { name: 'Palghar Police Control', phone: '+91-2525-251100', relationship: 'Other', priority: 1 },
+]
+
 export default function ContactsPage() {
   const [contacts, setContacts] = useState([])
   const [form, setForm] = useState(emptyForm)
@@ -73,6 +80,22 @@ export default function ContactsPage() {
       <div className="grid-2">
         <section className="panel">
           <h2>Add trusted contact</h2>
+          <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+              Demo presets:
+            </span>
+            {DEMO_CONTACT_PRESETS.map((preset) => (
+              <button
+                key={preset.name}
+                type="button"
+                className="chip"
+                style={{ fontSize: '0.75rem', padding: '2px 8px' }}
+                onClick={() => setForm({ ...preset, notifyOnSos: true })}
+              >
+                + {preset.name.split(' ')[0]} ({preset.relationship})
+              </button>
+            ))}
+          </div>
           {error && <div className="alert alert-error">{error}</div>}
           <form onSubmit={onSubmit}>
             <div className="field">
